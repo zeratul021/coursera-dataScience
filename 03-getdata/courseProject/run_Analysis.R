@@ -14,7 +14,7 @@ library(dplyr)
 
 ## check the env
 getwd()
-setwd("~/projects/coursera/coursera-dataScience/03-getdata/courseProject")
+#setwd("~/projects/coursera/coursera-dataScience/03-getdata/courseProject")
 ## dir.exists for R3.2
 stopifnot(file.info("UCI HAR Dataset")[1,"isdir"])
 
@@ -34,23 +34,18 @@ featureLabels = read.csv("UCI HAR Dataset/features.txt", sep="", header = F)
 
 ## CHAPTER 1
 ## merge the train and test datasets
-#trainData = data.frame(trainSubject, trainLabels, trainFeatures) 
 trainData = cbind(trainSubject, trainLabels, trainFeatures) 
 typeof(trainData)
 
-#testData = data.frame(testSubject, testLabels, testFeatures) 
 testData = cbind(testSubject, testLabels, testFeatures) 
 typeof(testData)
 ## unfortunatelly featuresNames contain invalid characters (R column naming conventions)
-featureNames = lapply(as.character(featureLabels[, 2]), gsub("\\(|\\)", "", gsub("-", "_", x)))
+featureNames = lapply(as.character(featureLabels[, 2]), function(x){gsub("\\(|\\)", "", gsub("-", "_", x))})
 allColumnNames = make.names(c("subject", "activity", featureNames), unique = T, allow_ = T)
 allData = rbind(trainData, testData)
 colnames(allData) = allColumnNames
 names(allData)
 stopifnot(nrow(allData) == nrow(trainData) + nrow(testData) & ncol(allData) == ncol(trainData) & ncol(allData) == ncol(testData))
-
-## optional: free some memory
-#remove(trainSubject, trainFeatures, trainLabels, trainData, testSubject, testFeatures, testLabels, testData)
 
 ## CHAPTER 2
 ## project only means and SDs
