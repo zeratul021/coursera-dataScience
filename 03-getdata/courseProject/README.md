@@ -1,4 +1,4 @@
-# Getting and Cleaning Data - Couse Project
+# Getting and Cleaning Data - Couse Project Readme
 
 This small project prepares the data collected from the accelerometers from the Samsung Galaxy S smartphones.
 

@@ -39,20 +39,22 @@ typeof(trainData)
 
 testData = cbind(testSubject, testLabels, testFeatures) 
 typeof(testData)
-## unfortunatelly featuresLabels contain invalid characters (R column naming conventions)
-normFeatureNames = gsub("-|,|\\(|\\)", "_", gsub("\\(\\)", "", as.character(featureLabels[, 2])))
-#normFeatureNames = lapply(as.character(featureLabels[, 2]), function(x){gsub("\\(|\\)", "", gsub("-", "_", x))})
-allColumnNames = make.names(c("subject", "activity", normFeatureNames), unique = T, allow_ = T)
+
 allData = rbind(trainData, testData)
+stopifnot(nrow(allData) == nrow(trainData) + nrow(testData) & ncol(allData) == ncol(trainData) & ncol(allData) == ncol(testData))
+## unfortunatelly featuresLabels contain invalid characters (R column naming conventions)
+normalizedFeatureNames = gsub("-|,|\\(|\\)", "_", gsub("\\(\\)", "", as.character(featureLabels[, 2])))
+#normFeatureNames = lapply(as.character(featureLabels[, 2]), function(x){gsub("\\(|\\)", "", gsub("-", "_", x))})
+allColumnNames = make.names(c("subject", "activity", normalizedFeatureNames), unique = T, allow_ = T)
+stopifnot(ncol(allData) == ncol(allColumnNames))
 colnames(allData) = allColumnNames
 #names(allData)
-stopifnot(nrow(allData) == nrow(trainData) + nrow(testData) & ncol(allData) == ncol(trainData) & ncol(allData) == ncol(testData))
 
 ## CHAPTER 2
 ## project only means and SDs
 ## feature names use suffixes to denote their type but we had to lose them as they can't be handled by dplyr
 allData = select(allData, matches("subject"), matches("activity"), contains("mean", ignore.case = T), contains("std", ignore.case = T))
-names(allData)
+#names(allData)
 ## optional: if we wanna to go all literal on the dataset then eliminate derived leftovers
 ## (not my idea :/ saw it in the forums)
 #allData = select(allData, -contains("freq", ignore.case = T), -contains("angle", ignore.case = T))
