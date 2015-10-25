@@ -29,7 +29,7 @@ testFeatures = read.csv("UCI HAR Dataset/test/X_test.txt", sep="", header = F)
 testLabels = read.csv("UCI HAR Dataset/test/y_test.txt", sep="", header = F)
 stopifnot(nrow(testSubject) == nrow(testFeatures) & nrow(testSubject) == nrow(testLabels))
 
-activityLabels = read.csv("UCI HAR Dataset/activity_labels.txt", sep="", header = F)
+activityLabels = read.csv("UCI HAR Dataset/activity_labels.txt", sep="", header = F, stringsAsFactors = F)
 featureLabels = read.csv("UCI HAR Dataset/features.txt", sep="", header = F)
 
 ## CHAPTER 1
@@ -39,12 +39,13 @@ typeof(trainData)
 
 testData = cbind(testSubject, testLabels, testFeatures) 
 typeof(testData)
-## unfortunatelly featuresNames contain invalid characters (R column naming conventions)
-featureNames = lapply(as.character(featureLabels[, 2]), function(x){gsub("\\(|\\)", "", gsub("-", "_", x))})
-allColumnNames = make.names(c("subject", "activity", featureNames), unique = T, allow_ = T)
+## unfortunatelly featuresLabels contain invalid characters (R column naming conventions)
+normFeatureNames = gsub("-|,|\\(|\\)", "_", gsub("\\(\\)", "", as.character(featureLabels[, 2])))
+#normFeatureNames = lapply(as.character(featureLabels[, 2]), function(x){gsub("\\(|\\)", "", gsub("-", "_", x))})
+allColumnNames = make.names(c("subject", "activity", normFeatureNames), unique = T, allow_ = T)
 allData = rbind(trainData, testData)
 colnames(allData) = allColumnNames
-names(allData)
+#names(allData)
 stopifnot(nrow(allData) == nrow(trainData) + nrow(testData) & ncol(allData) == ncol(trainData) & ncol(allData) == ncol(testData))
 
 ## CHAPTER 2
@@ -57,8 +58,10 @@ names(allData)
 #allData = select(allData, -contains("freq", ignore.case = T), -contains("angle", ignore.case = T))
 
 ## CHAPTER 3
-## replace the activity codes with the actual labels
-mutate(allData, activity = )
+
+## doesn't work with plain comparison, have to use match ??
+#allData = mutate(allData, activity = activityLabels[activityLabels$V1 == activity, "V2"])
+allData = mutate(allData, activity = activityLabels[match(activity, activityLabels$V1), "V2"])
 
 ## CHAPTER 4
 ## already happened in CHAPTER 1
